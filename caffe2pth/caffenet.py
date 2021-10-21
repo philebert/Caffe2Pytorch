@@ -17,13 +17,13 @@ from torch.autograd import Variable
 from torch.autograd import Function
 import torch.nn.functional as F
 from collections import OrderedDict
-from torch.legacy.nn import SpatialCrossMapLRN as SpatialCrossMapLRNOld
+from torch.nn.modules import CrossMapLRN2d as SpatialCrossMapLRNOld
 from itertools import product as product
 from .prototxt import *
 from .detection import Detection, MultiBoxLoss
 
 
-SUPPORTED_LAYERS = ['Data', 'AnnotatedData', 'Pooling', 'Eltwise', 'ReLU', 'PReLU', 
+SUPPORTED_LAYERS = ['Data', 'AnnotatedData', 'Pooling', 'Eltwise', 'ELU', 'ReLU', 'PReLU',
                     'Permute', 'Flatten', 'Slice', 'Concat', 'Softmax', 'SoftmaxWithLoss', 
                     'LRN', 'Dropout', 'Reshape', 'PriorBox', 'DetectionOutput']
 
@@ -1025,6 +1025,9 @@ class CaffeNet(nn.Module):
                 blob_channels[tname] = 1
                 blob_width[tname] = 1
                 blob_height[tname] = 1
+                i = i + 1
+            elif ltype == 'ELU':
+                models[lname] = nn.ReLU()
                 i = i + 1
             else:
                 print('create_network: unknown type #%s#' % ltype)
